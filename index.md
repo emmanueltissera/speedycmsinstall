@@ -1,9 +1,6 @@
 ---
-layout: docs
 title: Home - Speedy CMS Install
 description: How fast can your favourite Content Management System (CMS) be installed?
-toc: true
-theme: jekyll-theme-hacker
 ---
 # Speedy CMS Install
 

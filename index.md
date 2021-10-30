@@ -1,5 +1,5 @@
 ---
-title: Home - Speedy CMS Install
+title: Home
 description: How fast can your favourite Content Management System (CMS) be installed?
 ---
 # Speedy CMS Install

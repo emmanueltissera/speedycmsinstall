@@ -16,6 +16,10 @@ read -p "Credentials (save/display/both/none)[both]: " input
 outputCredentials="${input:-both}"
 echo Output credentials: $outputCredentials
 
+# Run everything inside this folder
+mkdir $demoName
+cd $demoName
+
 groupName="rg-"$demoName
 location=australiaeast
 serverName="sqlServer-"$demoName

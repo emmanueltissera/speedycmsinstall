@@ -33,6 +33,7 @@ deployPassword="woofW00F#9"$RANDOM
 umbracoAdminUserName="DemoUser"
 umbracoAdminEmail="demo.user@monumentmail.com"
 umbracoAdminPassword="UNatt3nd3d#dotnet5"$RANDOM
+deleteScriptFile="delete-demo-"$demoName".sh"
 
 # Create resource group to contain this demo
 echo Creating resource Group $groupName...
@@ -108,25 +109,15 @@ cd ..
 echo Deploy site to Azure Web App...
 az webapp deploy --resource-group $groupName --name $demoName --src-path ./release.zip
 
-echo Writing script to help deletion later...
-echo "# Once done, delete the entire resource group to keep costs down" > delete-demo.sh
-echo "echo Deleting resource group..." >> delete-demo.sh
-echo "az group delete --name $groupName --yes" >> delete-demo.sh
-chmod +x delete-demo.sh
-
-echo Trying to access the site for the first time...
-siteUrl=https://$(az webapp show --resource-group $groupName --name $demoName --query defaultHostName --output tsv)
-wget $siteUrl
-
 # Output credentials if requested
 echo
 echo Saving/displaying credentials...
-if $outputCredentials="none";
+if [$outputCredentials="none"];
 then
 echo Credentials are NOT saved/displayed as requested
 fi
 
-if $outputCredentials="save" || $outputCredentials="both";
+if [$outputCredentials="save" || $outputCredentials="both"];
 then
 echo Saving credentials as requested
 echo "Site URL: $siteUrl" > credentials.txt
@@ -136,10 +127,10 @@ echo "Deployment Username: $deployUserName" >> credentials.txt
 echo "Deployment Password: $deployPassword" >> credentials.txt
 echo "Umbraco Admin Username: $umbracoAdminEmail" >> credentials.txt
 echo "Umbraco Admin Password: $umbracoAdminPassword" >> credentials.txt
-echo "Saved credentials.txt file"
+echo "Saved $demoName/credentials.txt file"
 fi
 
-if $outputCredentials="display" || $outputCredentials="both";
+if [$outputCredentials="display" || $outputCredentials="both"];
 then
 echo Displaying credentials as requested
 echo "Site URL: $siteUrl"
@@ -150,6 +141,22 @@ echo "Deployment Password: $deployPassword"
 echo "Umbraco Admin Username: $umbracoAdminEmail"
 echo "Umbraco Admin Password: $umbracoAdminPassword"
 fi
+
+# Write script for deletion
+cd ../..
+echo Writing script to help deletion later...
+echo "# Once done, delete the entire resource group to keep costs down" > delete-demo.sh
+echo "echo Deleting resource group..." >> $deleteScriptFile
+echo "az group delete --name $groupName --yes" >> $deleteScriptFile
+echo "">> $deleteScriptFile
+echo "# delete the folder" > delete-demo.sh
+echo "rm -r $demoName" >> $deleteScriptFile
+chmod +x $deleteScriptFile
+echo Delete script location - $deleteScriptFile
+
+echo Trying to access the site for the first time...
+siteUrl=https://$(az webapp show --resource-group $groupName --name $demoName --query defaultHostName --output tsv)
+wget $siteUrl
 
 echo 
 echo Demo site install complete. The first load may take a moment. Go to $siteUrl The first load may take a moment.

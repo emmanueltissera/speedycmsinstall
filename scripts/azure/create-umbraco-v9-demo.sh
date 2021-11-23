@@ -113,6 +113,7 @@ az webapp deploy --resource-group $groupName --name $demoName --src-path ./relea
 siteUrl="https://"$(az webapp show --resource-group $groupName --name $demoName --query defaultHostName --output tsv)
 
 # Output credentials if requested
+cd ..
 echo
 if [[ "$outputCredentials" == "none" ]];
 then
@@ -148,20 +149,20 @@ echo "Umbraco Admin Password: $umbracoAdminPassword"
 fi
 
 # Write script for deletion
-cd ../..
+cd ..
 echo Writing script to help deletion later...
-echo "# Once done, delete the entire resource group to keep costs down" > delete-demo.sh
+echo "# Once done, delete the entire resource group to keep costs down" > $deleteScriptFile
 echo "echo Deleting resource group..." >> $deleteScriptFile
 echo "az group delete --name $groupName --yes" >> $deleteScriptFile
 echo "">> $deleteScriptFile
-echo "# delete the folder" > delete-demo.sh
+echo "# delete the folder" >> $deleteScriptFile
 echo "echo Deleting install folder..." >> $deleteScriptFile
 echo "rm -r $demoName" >> $deleteScriptFile
 chmod +x $deleteScriptFile
 echo Delete script location - $deleteScriptFile
 
 echo Trying to access the site for the first time...
-wget $siteUrl
+curl -s -o /dev/null -w "%{http_code}" $siteUrl
 
 echo 
 echo Demo site install complete. The first load may take a moment. Go to $siteUrl The first load may take a moment.

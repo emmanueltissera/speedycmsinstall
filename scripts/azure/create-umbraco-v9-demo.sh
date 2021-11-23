@@ -109,18 +109,22 @@ cd ..
 echo Deploy site to Azure Web App...
 az webapp deploy --resource-group $groupName --name $demoName --src-path ./release.zip
 
+# Get Site URL
+siteUrl="https://"$(az webapp show --resource-group $groupName --name $demoName --query defaultHostName --output tsv)
+
 # Output credentials if requested
 echo
-echo Saving/displaying credentials...
-if [$outputCredentials="none"];
+if [[ "$outputCredentials" == "none" ]];
 then
 echo Credentials are NOT saved/displayed as requested
 fi
 
-if [$outputCredentials="save" || $outputCredentials="both"];
+if [[ "$outputCredentials" == "save" || "$outputCredentials" == "both" ]];
 then
+echo 
 echo Saving credentials as requested
 echo "Site URL: $siteUrl" > credentials.txt
+echo >> credentials.txt
 echo "Database Admin Username: $adminUser" >> credentials.txt
 echo "Database Admin Password: $adminPassword" >> credentials.txt
 echo "Deployment Username: $deployUserName" >> credentials.txt
@@ -130,8 +134,9 @@ echo "Umbraco Admin Password: $umbracoAdminPassword" >> credentials.txt
 echo "Saved $demoName/credentials.txt file"
 fi
 
-if [$outputCredentials="display" || $outputCredentials="both"];
+if [[ "$outputCredentials" == "display" || "$outputCredentials" == "both" ]];
 then
+echo 
 echo Displaying credentials as requested
 echo "Site URL: $siteUrl"
 echo "Database Admin Username: $adminUser"
@@ -150,12 +155,12 @@ echo "echo Deleting resource group..." >> $deleteScriptFile
 echo "az group delete --name $groupName --yes" >> $deleteScriptFile
 echo "">> $deleteScriptFile
 echo "# delete the folder" > delete-demo.sh
+echo "echo Deleting install folder..." >> $deleteScriptFile
 echo "rm -r $demoName" >> $deleteScriptFile
 chmod +x $deleteScriptFile
 echo Delete script location - $deleteScriptFile
 
 echo Trying to access the site for the first time...
-siteUrl=https://$(az webapp show --resource-group $groupName --name $demoName --query defaultHostName --output tsv)
 wget $siteUrl
 
 echo 

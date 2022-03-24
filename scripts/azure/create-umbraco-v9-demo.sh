@@ -112,7 +112,7 @@ cd ..
 # Deploy the Umbraco sample site
 echo 
 echo "Deploy site to Azure Web App..."
-az webapp deploy --resource-group "$groupName" --name "$demoName" --src-path ./release.zip
+az webapp deployment source config-zip --resource-group "$groupName" --name "$demoName" --src ./release.zip
 
 # Get the site URL
 siteUrl="https://"$(az webapp show --resource-group "$groupName" --name "$demoName" --query defaultHostName --output tsv)

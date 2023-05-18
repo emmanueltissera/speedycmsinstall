@@ -64,11 +64,29 @@ az appservice plan create --name "$appServiceName" --resource-group "$groupName"
 
 # Create a web app
 echo "Creating Web App..."
-az webapp create --name "$demoName" --resource-group "$groupName" --plan  "$appServiceName" --runtime "DOTNET|5.0"
+az webapp create --name "$demoName" --resource-group "$groupName" --plan  "$appServiceName" --runtime "DOTNETCORE:7.0"
 
 # Set WebApp Deployment User
 echo "Setting WebApp deployment user..."
 az webapp deployment user set --user-name "$deployUserName" --password "$deployPassword"
+
+# Install the .NET 7 SDK
+echo "Installing .NET 7 SDK on this cloud shell..."
+mkdir dotnetinstall
+cd dotnetinstall || exit
+
+wget https://download.visualstudio.microsoft.com/download/pr/351400ef-f2e6-4ee7-9d1b-4c246231a065/9f7826270fb36ada1bdb9e14bc8b5123/dotnet-sdk-7.0.302-linux-x64.tar.gz
+
+DOTNET_FILE=dotnet-sdk-7.0.302-linux-x64.tar.gz
+DOTNET_ROOT=$(pwd)/dotnet
+export DOTNET_ROOT
+
+mkdir -p "$DOTNET_ROOT" && tar zxf "$DOTNET_FILE" -C "$DOTNET_ROOT"
+
+export PATH=$DOTNET_ROOT:$PATH
+
+cd ..
+
 
 # Set Umbraco Unattended install variables
 echo "Setting unattended install variables on the web app config..."
@@ -96,7 +114,7 @@ cd ..
 # Deploy the Umbraco sample site
 echo 
 echo "Deploy site to Azure Web App..."
-az webapp deployment source config-zip --resource-group "$groupName" --name "$demoName" --src ./release.zip
+  az webapp deployment source config-zip --resource-group "$groupName" --name "$demoName" --src ./release.zip
 
 # Get the site URL
 siteUrl="https://"$(az webapp show --resource-group "$groupName" --name "$demoName" --query defaultHostName --output tsv)
@@ -145,7 +163,7 @@ echo
 echo "Writing script to help deletion later..."
 {
   echo "#!/bin/bash"
-  echo "echo UMBRACO 9 DEMO CLEAN UP"
+  echo "echo UMBRACO 12 RC1 DEMO CLEAN UP"
   echo
   echo "# Once done, delete the entire resource group to keep costs down"
   echo "echo Deleting resource group..."

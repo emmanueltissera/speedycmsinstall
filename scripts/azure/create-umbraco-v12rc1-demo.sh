@@ -27,15 +27,16 @@ groupName="rg-"$demoName
 location=australiaeast
 serverName="sqlServer-"$demoName
 adminUser="serveradmin"
-adminPassword="High5Ur0ck#"$RANDOM
+adminPassword="High5Ur0ck#"$RANDOM$RANDOM
 dbName="sqlDb-"$demoName
 appServiceName="app-"$demoName
-deployUserName="u9deployer"
-deployPassword="woofW00F#9"$RANDOM
+deployUserName="u12rc1deployer"
+deployPassword="woofW00F#12rc1"$RANDOM$RANDOM
 umbracoAdminUserName="DemoUser"
 umbracoAdminEmail="demo.user@monumentmail.com"
-umbracoAdminPassword="UNatt3nd3d#dotnet5"$RANDOM
+umbracoAdminPassword="UNatt3nd3d#dotnet7"$RANDOM$RANDOM
 deleteScriptFile="delete-demo-$demoName.sh"
+umbracoDeliveryApiKey="headless-peeps#"$RANDOM$RANDOM
 
 # Create a resource group to contain this demo
 echo "Creating Resource Group $groupName..."
@@ -92,7 +93,7 @@ cd ..
 echo "Setting unattended install variables on the web app config..."
 az webapp config connection-string set --resource-group "$groupName" --name "$demoName" --settings umbracoDbDSN="$connectionString" --connection-string-type SQLAzure
 
-az webapp config appsettings set --resource-group "$groupName" --name "$demoName" --settings UMBRACO__CMS__GLOBAL__INSTALLMISSINGDATABASE=true UMBRACO__CMS__UNATTENDED__INSTALLUNATTENDED=true UMBRACO__CMS__UNATTENDED__UNATTENDEDUSERNAME="$umbracoAdminUserName" UMBRACO__CMS__UNATTENDED__UNATTENDEDUSEREMAIL="$umbracoAdminEmail" UMBRACO__CMS__UNATTENDED__UNATTENDEDUSERPASSWORD="$umbracoAdminPassword"
+az webapp config appsettings set --resource-group "$groupName" --name "$demoName" --settings UMBRACO__CMS__GLOBAL__INSTALLMISSINGDATABASE=true UMBRACO__CMS__UNATTENDED__INSTALLUNATTENDED=true UMBRACO__CMS__UNATTENDED__UNATTENDEDUSERNAME="$umbracoAdminUserName" UMBRACO__CMS__UNATTENDED__UNATTENDEDUSEREMAIL="$umbracoAdminEmail" UMBRACO__CMS__UNATTENDED__UNATTENDEDUSERPASSWORD="$umbracoAdminPassword" Umbraco__CMS__DeliveryApi__Enabled=true Umbraco__CMS__DeliveryApi__PublicAccess=true Umbraco__CMS__DeliveryApi__ApiKey="$umbracoDeliveryApiKey" Umbraco__CMS__DeliveryApi__DisallowedContentTypeAliases="[]" Umbraco__CMS__DeliveryApi__RichTextOutputAsJson=true
 
 # Create Umbraco Project
 echo "Create a new Umbraco project on this cloud shell..."
@@ -140,6 +141,7 @@ echo "Saving credentials as requested"
   echo "Deployment Password: $deployPassword"
   echo "Umbraco Admin Username: $umbracoAdminEmail"
   echo "Umbraco Admin Password: $umbracoAdminPassword"
+  echo "Umbraco Delivery API Key: $umbracoDeliveryApiKey"
 } > credentials.txt
 echo "Saved $demoName/credentials.txt file"
 fi
@@ -149,12 +151,14 @@ then
 echo 
 echo "Displaying credentials as requested"
 echo "Site URL: $siteUrl"
+echo
 echo "Database Admin Username: $adminUser"
 echo "Database Admin Password: $adminPassword"
 echo "Deployment Username: $deployUserName"
 echo "Deployment Password: $deployPassword"
 echo "Umbraco Admin Username: $umbracoAdminEmail"
 echo "Umbraco Admin Password: $umbracoAdminPassword"
+echo "Umbraco Delivery API Key: $umbracoDeliveryApiKey" 
 fi
 
 # Write script for deletion
